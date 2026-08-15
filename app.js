@@ -810,6 +810,31 @@ function updateDbStatsText() {
   el.innerHTML = `মোট রেকর্ড: <b>${db.records.length}</b> টি &nbsp;•&nbsp; অ্যাকাউন্ট: <b>${db.names.length}</b> টি &nbsp;•&nbsp; ক্যাটাগরি: <b>${db.categories.length}</b> টি<br>ডাটা এই ব্রাউজারের localStorage-এ (এই ডিভাইসেই) সংরক্ষিত। নিয়মিত ব্যাকআপ ডাউনলোড করে রাখুন।`;
 }
 
+// Apps Script-এর Web App URL (শেষে ?action=getData যুক্ত করা হয়েছে)
+const webAppUrl = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec?action=getData";
+
+function loadSheetData() {
+  fetch(webAppUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("গুগল শিট থেকে আসা ডেটা:", data);
+      
+      // উদাহরণ: আপনার HTML UI তে ডেটা দেখানোর জন্য ফাংশন কল করতে পারেন
+      renderDataToUI(data);
+    })
+    .catch(error => {
+      console.error("ডেটা লোড করতে সমস্যা হয়েছে:", error);
+    });
+}
+
+// পেজ লোড হলে ডেটা ফেচ শুরু হবে
+document.addEventListener("DOMContentLoaded", loadSheetData);
+
 /* ----------------------------------- init ----------------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
   loadDB();
