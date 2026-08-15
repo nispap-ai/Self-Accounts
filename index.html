@@ -433,5 +433,44 @@ table.dt tr:last-child td{border-bottom:none;}
       });
     }
   </script>
+<!-- ফায়ারবেস লাইব্রেরি যুক্ত করা -->
+<script type="module">
+  import { initializeApp } from "https://gstatic.com";
+  import { getDatabase, ref, set, onValue } from "https://gstatic.com";
+
+  // আপনার ধাপ ২ থেকে পাওয়া ফায়ারবেস কনফিগ এখানে বসান
+  const firebaseConfig = {
+    apiKey: "AIzaSyBoHX1pT_sG2gDDgz3y6jOBsGvByAgx2FU",
+    authDomain: "self-accdd.firebaseapp.com",
+    databaseURL: "https://self-accdd-default-rtdb.firebaseio.com/",
+    projectId: "self-accdd",
+    storageBucket: "self-accdd.firebasestorage.app",
+    messagingSenderId: "829028496794",
+    appId: "1:829028496794:web:b5515a34f11212aa52b623"
+  };
+
+  // ফায়ারবেস কানেক্ট করা
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+
+  // ১. ডেটা বা পাসওয়ার্ড সেভ করার ফাংশন
+  function appSaveData(entryKey, dataObject) {
+    // এটি আপনার ডেটাকে ফায়ারবেসের 'myAppData' ফোল্ডারে সেভ করবে
+    set(ref(database, 'myAppData/' + entryKey), dataObject)
+    .then(() => console.log("ফায়ারবেসে সফলভাবে সেভ হয়েছে!"))
+    .catch((error) => console.error("সেভ হতে সমস্যা হয়েছে:", error));
+  }
+
+  // ২. ফায়ারবেস থেকে রিয়েল-টাইমে ডেটা লোড করার ফাংশন
+  const dataRef = ref(database, 'myAppData/');
+  onValue(dataRef, (snapshot) => {
+    const allData = snapshot.val();
+    if(allData) {
+      console.log("ডাটাবেজের সব ডেটা চলে এসেছে:", allData);
+      // [এখানে আপনার অ্যাপের পুরোনো কোড যা দিয়ে স্ক্রিনে ডেটা দেখাতেন তা বসবে]
+    }
+  });
+</script>
+
 </body>
 </html>
