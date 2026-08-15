@@ -811,7 +811,7 @@ function updateDbStatsText() {
 }
 
 // Apps Script-এর Web App URL (শেষে ?action=getData যুক্ত করা হয়েছে)
-const webAppUrl = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec?action=getData";
+const webAppUrl = "https://script.google.com/macros/s/AKfycbxTsDjfriZyohTWs6GQ90byYW6AEm9YEz8wfwoVx0H9crs0r1ZG0p9VRMQwy1oUx27DFw/exec?action=getData";
 
 function loadSheetData() {
   fetch(webAppUrl)
