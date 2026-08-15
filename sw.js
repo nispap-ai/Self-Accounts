@@ -1,10 +1,9 @@
 const CACHE_NAME = 'my-pwa-cache-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/script.js',
-  '/icon-192.png'
+  './',
+  './index.html',
+  './app.js',
+  './icon-192.png'
 ];
 
 // ক্যাশ সেভ করা
