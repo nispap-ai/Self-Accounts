@@ -29,13 +29,18 @@ function loadDB() {
 function saveDB() {
   try {
     localStorage.setItem(DB_KEY, JSON.stringify(db));
+    
+    // Firebase-এ ডাটা পুশ করা
+    if (window.firebaseDB && window.firebaseSet && window.firebaseRef) {
+      window.firebaseSet(window.firebaseRef(window.firebaseDB, 'myAppData/db'), db);
+    }
+
     return true;
   } catch (e) {
-    showToastAlert("⚠️ সংরক্ষণে সমস্যা হয়েছে! স্টোরেজ পূর্ণ হয়ে থাকতে পারে।");
+    showToastAlert("⚠️ সংরক্ষণে সমস্যা হয়েছে! স্টোরেজ পূর্ণ হয়ে থাকতে পারে।");[cite: 3]
     return false;
   }
 }
-
 /* ------------------------------- helpers -------------------------------- */
 function val(id) { const el = document.getElementById(id); return el ? el.value : ""; }
 function setTxt(id, t) { const el = document.getElementById(id); if (el) el.innerText = t; }
