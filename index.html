@@ -424,21 +424,21 @@ table.dt tr:last-child td{border-bottom:none;}
   <h1>Self Accounting System</h1>
 
   <!-- Service Worker Registration -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('Service Worker Registered!', reg))
-          .catch(err => console.log('Service Worker Failed!', err));
-      });
-    }
-  </script>
-<!-- ফায়ারবেস লাইব্রেরি যুক্ত করা -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('Service Worker Registered!', reg))
+        .catch(err => console.log('Service Worker Failed!', err));
+    });
+  }
+</script>
+  
+<!-- ফায়ারবেস লাইব্রেরি (সঠিক URL সহ) -->
 <script type="module">
-  import { initializeApp } from "https://gstatic.com";
-  import { getDatabase, ref, set, onValue } from "https://gstatic.com";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-  // আপনার ধাপ ২ থেকে পাওয়া ফায়ারবেস কনফিগ এখানে বসান
   const firebaseConfig = {
     apiKey: "AIzaSyBoHX1pT_sG2gDDgz3y6jOBsGvByAgx2FU",
     authDomain: "self-accdd.firebaseapp.com",
@@ -449,27 +449,16 @@ table.dt tr:last-child td{border-bottom:none;}
     appId: "1:829028496794:web:b5515a34f11212aa52b623"
   };
 
-  // ফায়ারবেস কানেক্ট করা
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
 
-  // ১. ডেটা বা পাসওয়ার্ড সেভ করার ফাংশন
-  function appSaveData(entryKey, dataObject) {
-    // এটি আপনার ডেটাকে ফায়ারবেসের 'myAppData' ফোল্ডারে সেভ করবে
-    set(ref(database, 'myAppData/' + entryKey), dataObject)
-    .then(() => console.log("ফায়ারবেসে সফলভাবে সেভ হয়েছে!"))
-    .catch((error) => console.error("সেভ হতে সমস্যা হয়েছে:", error));
-  }
+  // app.js থেকে ব্যবহারের জন্য Window অবজেক্টে এক্সপোর্ট
+  window.firebaseDB = database;
+  window.firebaseRef = ref;
+  window.firebaseSet = set;
+  window.firebaseOnValue = onValue;
 
-  // ২. ফায়ারবেস থেকে রিয়েল-টাইমে ডেটা লোড করার ফাংশন
-  const dataRef = ref(database, 'myAppData/');
-  onValue(dataRef, (snapshot) => {
-    const allData = snapshot.val();
-    if(allData) {
-      console.log("ডাটাবেজের সব ডেটা চলে এসেছে:", allData);
-      // [এখানে আপনার অ্যাপের পুরোনো কোড যা দিয়ে স্ক্রিনে ডেটা দেখাতেন তা বসবে]
-    }
-  });
+  console.log("Firebase Connected Successfully!");
 </script>
 
 </body>
