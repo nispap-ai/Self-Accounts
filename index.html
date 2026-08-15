@@ -435,6 +435,7 @@ table.dt tr:last-child td{border-bottom:none;}
 </script>
   
 <!-- ফায়ারবেস লাইব্রেরি (সঠিক URL সহ) -->
+<!-- Firebase SDK Correct Integration -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -452,7 +453,7 @@ table.dt tr:last-child td{border-bottom:none;}
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
 
-  // app.js থেকে ব্যবহারের জন্য Window অবজেক্টে এক্সপোর্ট
+  // app.js থেকে Firebase ব্যবহার করার জন্য Global variable সেট করা
   window.firebaseDB = database;
   window.firebaseRef = ref;
   window.firebaseSet = set;
@@ -460,6 +461,5 @@ table.dt tr:last-child td{border-bottom:none;}
 
   console.log("Firebase Connected Successfully!");
 </script>
-
 </body>
 </html>
