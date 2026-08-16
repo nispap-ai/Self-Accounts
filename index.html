@@ -434,8 +434,7 @@ table.dt tr:last-child td{border-bottom:none;}
   }
 </script>
   
-<!-- ফায়ারবেস লাইব্রেরি (সঠিক URL সহ) -->
-<!-- Firebase SDK Correct Integration -->
+<!-- ফায়ারবেস লাইব্রেরি এবং সঠিক রেজিস্ট্রেশন -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -450,16 +449,30 @@ table.dt tr:last-child td{border-bottom:none;}
     appId: "1:829028496794:web:b5515a34f11212aa52b623"
   };
 
+  // ফায়ারবেস কানেক্ট করা
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
 
-  // app.js থেকে Firebase ব্যবহার করার জন্য Global variable সেট করা
+  // app.js ফাইলের সাথে কানেক্ট করার জন্য window অবজেক্টে সেট করা
   window.firebaseDB = database;
   window.firebaseRef = ref;
   window.firebaseSet = set;
   window.firebaseOnValue = onValue;
 
-  console.log("Firebase Connected Successfully!");
+  console.log("Firebase Successfully Connected!");
 </script>
+
+<!-- Service Worker রেজিস্টার (Relative Path সহ) -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('Service Worker Registered!', reg))
+        .catch(err => console.log('Service Worker Failed!', err));
+    });
+  }
+</script>
+
+<script src="app.js"></script>
 </body>
 </html>
