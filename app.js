@@ -298,83 +298,115 @@ function selectDashboardAccount(accName) {
   });
   triggerLiveUpdate();
 }
-
 /* ---------------------------- settings: dropdown CRUD -------------------- */
 function loadManagementOptions() {
   const type = val("manageType");
   const mSelect = document.getElementById("existingItemsSelect");
+  const inputEl = document.getElementById("itemValueInput");
+  const btnDelete = document.getElementById("btnDeleteItem");
+  
   if (!mSelect) return;
 
-  mSelect.innerHTML = '<option value="">-নতুন যোগ করুন-</option>';
+  mSelect.innerHTML = '<option value="">-- নতুন যোগ করুন --</option>';
   const items = type === "name" ? db.names : db.categories;
   items.forEach(it => mSelect.add(new Option(it, it)));
   
-  if (document.getElementById("itemValueInput")) document.getElementById("itemValueInput").value = "";
-  if (document.getElementById("btnDeleteItem")) document.getElementById("btnDeleteItem").classList.add("hidden");
+  if (inputEl) inputEl.value = "";
+  if (btnDelete) btnDelete.classList.add("hidden");
 }
 
 function prepareEditItem() {
   const selected = val("existingItemsSelect");
-  if (document.getElementById("itemValueInput")) document.getElementById("itemValueInput").value = selected;
-  if (document.getElementById("btnDeleteItem")) document.getElementById("btnDeleteItem").classList.toggle("hidden", !selected);
+  const inputEl = document.getElementById("itemValueInput");
+  const btnDelete = document.getElementById("btnDeleteItem");
+
+  if (inputEl) inputEl.value = selected;
+  if (btnDelete) {
+    if (selected) {
+      btnDelete.classList.remove("hidden");
+    } else {
+      btnDelete.classList.add("hidden");
+    }
+  }
 }
 
 function saveDropdownData() {
   const type = val("manageType");
   const oldVal = val("existingItemsSelect");
-  const newVal = val("itemValueInput").trim();
+  const inputEl = document.getElementById("itemValueInput");
+  const newVal = inputEl ? inputEl.value.trim() : "";
 
   if (!newVal) { 
-    showToastAlert("আইটেমের নাম ফাঁকা রাখা যাবে না!"); 
+    showToastAlert("⚠️ আইটেমের নাম ফাঁকা রাখা যাবে না!"); 
     return; 
   }
 
   const targetKey = type === "name" ? "names" : "categories";
 
-  if (oldVal === "") {
+  // নতুন আইটেম যোগ করার ক্ষেত্রে
+  if (!oldVal) {
     if (db[targetKey].includes(newVal)) { 
-      showToastAlert("এই আইটেমটি ইতিমধ্যে বিদ্যমান!"); 
+      showToastAlert("⚠️ এই নামটি ইতিমধ্যে তালিকাভুক্ত আছে!"); 
       return; 
     }
     db[targetKey].push(newVal);
-    showToastAlert("আইটেমটি সফলভাবে যুক্ত করা হয়েছে।");
-  } else {
+    showToastAlert("✅ নতুন আইটেম সফলভাবে যোগ করা হয়েছে।");
+  } 
+  // পুরাতন আইটেম এডিট করার ক্ষেত্রে
+  else {
     const idx = db[targetKey].indexOf(oldVal);
     if (idx === -1) { 
-      showToastAlert("আইটেমটি খুঁজে পাওয়া যায়নি।"); 
+      showToastAlert("❌ আইটেমটি খুঁজে পাওয়া যায়নি।"); 
       return; 
     }
     db[targetKey][idx] = newVal;
-    showToastAlert("আইটেমটি সফলভাবে আপডেট করা হয়েছে।");
+
+    // যদি কোনো রেকর্ডে এই ক্যাটাগরি বা একাউন্ট ব্যবহার হয়ে থাকে, তবে সেটাও আপডেট হবে
+    if (type === "name") {
+      db.records.forEach(r => { if (r.name === oldVal) r.name = newVal; });
+    } else {
+      db.records.forEach(r => { if (r.category === oldVal) r.category = newVal; });
+    }
+
+    showToastAlert("✅ আইটেমটি সফলভাবে আপডেট করা হয়েছে।");
   }
 
-  saveDB();
-  reloadDropdowns();
-  loadManagementOptions();
+  // ডাটাবেজ আপডেট এবং ড্রপডাউন রিফ্রেশ
+  if (saveDB()) {
+    reloadDropdowns();
+    loadManagementOptions();
+    updateDbStatsText();
+  }
 }
 
 function deleteDropdownData() {
   const type = val("manageType");
   const v = val("existingItemsSelect");
-  if (!v) return;
 
-  if (!confirm("আপনি কি নিশ্চিতভাবে এই আইটেমটি ড্রপডাউন থেকে ডিলিট করতে চান?")) return;
+  if (!v) {
+    showToastAlert("⚠️ ডিলিট করার জন্য একটি আইটেম সিলেক্ট করুন!");
+    return;
+  }
+
+  if (!confirm(`আপনি কি নিশ্চিতভাবে "${v}" আইটেমটি ডিলিট করতে চান?`)) return;
 
   const targetKey = type === "name" ? "names" : "categories";
   const idx = db[targetKey].indexOf(v);
   
   if (idx === -1) { 
-    showToastAlert("আইটেমটি পাওয়া যায়নি।"); 
+    showToastAlert("❌ আইটেমটি পাওয়া যায়নি।"); 
     return; 
   }
 
   db[targetKey].splice(idx, 1);
-  saveDB();
-  showToastAlert("আইটেমটি সফলভাবে ডিলিট করা হয়েছে।");
-  reloadDropdowns();
-  loadManagementOptions();
+  
+  if (saveDB()) {
+    showToastAlert("🗑️ আইটেমটি সফলভাবে ডিলিট করা হয়েছে।");
+    reloadDropdowns();
+    loadManagementOptions();
+    updateDbStatsText();
+  }
 }
-
 /* ------------------------------ processed data --------------------------- */
 function getProcessedForAccount(accName) {
   const recs = db.records.filter(r => r.name === accName);
