@@ -81,18 +81,33 @@ function inRange(dateStr, from, to) {
 function checkAppPin() {
   const pin = val("appPinInput").trim();
   const errorMsg = document.getElementById("pinErrorMsg");
-  if (!pin) { showToastAlert("পিন নম্বরটি লিখুন!"); return; }
+  
+  if (!db) loadDB(); // ডাটাবেজ না থাকলে পুনরায় লোড করবে
+
+  if (!pin) { 
+    showToastAlert("পিন নম্বরটি লিখুন!"); 
+    return; 
+  }
+  
+  // ডিফল্ট পিন "1234" অথবা আপনার সেট করা পিন
   if (pin !== db.pin) {
     errorMsg.innerText = "❌ ভুল পিন নম্বর! আবার চেষ্টা করুন।";
     errorMsg.classList.remove("hidden");
     document.getElementById("appPinInput").value = "";
     return;
   }
+
+  // পিন সঠিক হলে স্ক্রিন আনলক
   errorMsg.classList.add("hidden");
   document.getElementById("pinLockScreen").classList.add("hidden");
   document.getElementById("mainAppContent").classList.remove("hidden");
-  document.getElementById("bottomNavBar").classList.remove("hidden");
-  document.getElementById("bottomNavBar").style.display = "flex";
+  
+  const navBar = document.getElementById("bottomNavBar");
+  if (navBar) {
+    navBar.classList.remove("hidden");
+    navBar.style.display = "flex";
+  }
+
   initializeAppEngine();
 }
 function settingsClickTrigger() {
@@ -837,13 +852,34 @@ function loadSheetData() {
     });
 }
 
-// পেজ লোড হলে ডেটা ফেচ শুরু হবে
-document.addEventListener("DOMContentLoaded", loadSheetData);
-
-/* ----------------------------------- init ----------------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
-  loadDB();
-  document.getElementById("appPinInput").addEventListener("keypress", e => { if (e.key === "Enter") checkAppPin(); });
-  document.getElementById("settingsGatePin").addEventListener("keypress", e => { if (e.key === "Enter") verifySettingsAccess(); });
-  setTimeout(() => document.getElementById("appPinInput").focus(), 200);
+  loadDB(); // লোকাল ডাটাবেজ লোড
+  
+  // পিন ইনপুট ইভেন্ট লিসেনার
+  const pinInput = document.getElementById("appPinInput");
+  if (pinInput) {
+    pinInput.addEventListener("keypress", e => { 
+      if (e.key === "Enter") checkAppPin(); 
+    });
+    setTimeout(() => pinInput.focus(), 200);
+  }
+
+  const settingsGatePin = document.getElementById("settingsGatePin");
+  if (settingsGatePin) {
+    settingsGatePin.addEventListener("keypress", e => { 
+      if (e.key === "Enter") verifySettingsAccess(); 
+    });
+  }
+
+  // ফায়ারবেস থেকে ডাটা রিয়েলটাইমে সিঙ্ক করা (যদি ফায়ারবেস প্রস্তুত থাকে)
+  if (window.firebaseDB && window.firebaseOnValue && window.firebaseRef) {
+    const dataRef = window.firebaseRef(window.firebaseDB, 'myAppData/db');
+    window.firebaseOnValue(dataRef, (snapshot) => {
+      const fbData = snapshot.val();
+      if (fbData) {
+        db = fbData;
+        localStorage.setItem(DB_KEY, JSON.stringify(db));
+      }
+    });
+  }
 });
