@@ -1,126 +1,119 @@
 <!DOCTYPE html> 
 <html lang="bn">
 <head>
-  <!-- স্ট্যান্ডার্ড ফ্যাভআইকন -->
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Self Accounting System</title>
 
-<!-- iOS (iPhone)-এর জন্য অ্যাপ আইকন -->
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Self Accounting System (Local/Offline)</title>
-<style>
-:root{
-  --indigo:#4f46e5; --indigo-dark:#4338ca; --slate-900:#0f172a; --slate-800:#1e293b;
-  --slate-700:#334155; --slate-500:#64748b; --slate-400:#94a3b8; --slate-200:#e2e8f0;
-  --slate-100:#f1f5f9; --slate-50:#f8fafc; --green:#16a34a; --green-bg:#dcfce7;
-  --red:#dc2626; --red-bg:#fee2e2; --yellow:#ca8a04; --yellow-bg:#fef9c3; --blue-bg:#dbeafe; --blue:#1e40af;
-}
-*{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
-body{
-  font-family:'Noto Sans Bengali','Nirmala UI','Segoe UI',system-ui,-apple-system,sans-serif;
-  background:var(--slate-50); color:var(--slate-900); font-size:14px; padding:8px 8px 84px;
-  -webkit-font-smoothing:antialiased;
-}
-.hidden{display:none !important;}
-button,input,select{font-family:inherit; font-size:14px;}
-input,select{
-  width:100%; padding:6px 8px; height:36px; border-radius:8px; border:1px solid var(--slate-200);
-  background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);
-}
-input:focus,select:focus{outline:none; border-color:var(--indigo); box-shadow:0 0 0 2px rgba(79,70,229,.25);}
-label{display:block; font-weight:700; font-size:12px; color:var(--slate-700); margin-bottom:3px;}
-.req{color:var(--red);}
-button{cursor:pointer; border:none; border-radius:8px; font-weight:700; transition:.15s;}
-button:active{transform:scale(.97);}
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4f46e5">
 
-/* ===== overlay / lock / modal ===== */
-.overlay{position:fixed; inset:0; background:rgba(15,23,42,.92); display:flex; align-items:center; justify-content:center; z-index:60; padding:16px;}
-.overlay.light{background:rgba(15,23,42,.75);}
-.box{background:#fff; border-radius:14px; box-shadow:0 20px 40px rgba(0,0,0,.25); padding:22px; width:100%; max-width:380px; text-align:center;}
-.box h1{color:var(--indigo); font-size:20px; margin:4px 0 2px;}
-.box .sub{color:var(--slate-500); font-size:12px; margin-bottom:14px;}
-.pin-input{text-align:center; letter-spacing:8px; font-size:20px; font-weight:800; height:48px;}
-.err{color:var(--red); font-size:12px; font-weight:700; margin-top:8px;}
+  <style>
+    :root{
+      --indigo:#4f46e5; --indigo-dark:#4338ca; --slate-900:#0f172a; --slate-800:#1e293b;
+      --slate-700:#334155; --slate-500:#64748b; --slate-400:#94a3b8; --slate-200:#e2e8f0;
+      --slate-100:#f1f5f9; --slate-50:#f8fafc; --green:#16a34a; --green-bg:#dcfce7;
+      --red:#dc2626; --red-bg:#fee2e2; --yellow:#ca8a04; --yellow-bg:#fef9c3; --blue-bg:#dbeafe; --blue:#1e40af;
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0;padding:0;}
+    body{
+      font-family:'Noto Sans Bengali','Nirmala UI','Segoe UI',system-ui,-apple-system,sans-serif;
+      background:var(--slate-50); color:var(--slate-900); font-size:14px; padding:8px 8px 84px;
+      -webkit-font-smoothing:antialiased;
+    }
+    .hidden{display:none !important;}
+    button,input,select{font-family:inherit; font-size:14px;}
+    input,select{
+      width:100%; padding:6px 8px; height:36px; border-radius:8px; border:1px solid var(--slate-200);
+      background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);
+    }
+    input:focus,select:focus{outline:none; border-color:var(--indigo); box-shadow:0 0 0 2px rgba(79,70,229,.25);}
+    label{display:block; font-weight:700; font-size:12px; color:var(--slate-700); margin-bottom:3px;}
+    .req{color:var(--red);}
+    button{cursor:pointer; border:none; border-radius:8px; font-weight:700; transition:.15s;}
+    button:active{transform:scale(.97);}
 
-/* ===== toast ===== */
-#toast{position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(120px); background:var(--slate-900); color:#fff; padding:11px 20px; border-radius:40px; font-weight:700; font-size:13px; box-shadow:0 10px 25px rgba(0,0,0,.3); z-index:100; opacity:0; transition:.3s; max-width:92vw; text-align:center;}
-#toast.show{transform:translateX(-50%) translateY(0); opacity:1;}
+    .overlay{position:fixed; inset:0; background:rgba(15,23,42,.92); display:flex; align-items:center; justify-content:center; z-index:60; padding:16px;}
+    .overlay.light{background:rgba(15,23,42,.75);}
+    .box{background:#fff; border-radius:14px; box-shadow:0 20px 40px rgba(0,0,0,.25); padding:22px; width:100%; max-width:380px; text-align:center;}
+    .box h1{color:var(--indigo); font-size:20px; margin:4px 0 2px;}
+    .box .sub{color:var(--slate-500); font-size:12px; margin-bottom:14px;}
+    .pin-input{text-align:center; letter-spacing:8px; font-size:20px; font-weight:800; height:48px;}
+    .err{color:var(--red); font-size:12px; font-weight:700; margin-top:8px;}
 
-/* ===== shell ===== */
-.shell{max-width:1200px; margin:0 auto; background:#fff; border:1px solid var(--slate-200); border-radius:14px; padding:10px;}
-.app-header{text-align:center; padding:10px 0; margin-bottom:12px;}
-.app-header h1{color:#b91c1c; font-size:20px; letter-spacing:1px; margin:0;}
-.app-header p{color:var(--slate-500); font-size:11px; margin:3px 0 0;}
+    #toast{position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(120px); background:var(--slate-900); color:#fff; padding:11px 20px; border-radius:40px; font-weight:700; font-size:13px; box-shadow:0 10px 25px rgba(0,0,0,.3); z-index:100; opacity:0; transition:.3s; max-width:92vw; text-align:center;}
+    #toast.show{transform:translateX(-50%) translateY(0); opacity:1;}
 
-/* ===== cards / grids ===== */
-.card{background:#fff; border:1px solid var(--slate-200); border-radius:12px; padding:12px; box-shadow:0 1px 3px rgba(0,0,0,.04);}
-.card + .card{margin-top:10px;}
-.card h3{font-size:12px; font-weight:800; color:var(--slate-800); margin:0 0 8px; padding-bottom:6px; border-bottom:1px solid var(--slate-200);}
-.grid{display:grid; gap:10px;}
-.g2{grid-template-columns:repeat(2,1fr);}
-.g3{grid-template-columns:repeat(3,1fr);}
-.g4{grid-template-columns:repeat(4,1fr);}
-@media(min-width:900px){ .lg-g12{display:grid; grid-template-columns:repeat(12,1fr); gap:14px;} .lg-c4{grid-column:span 4;} .lg-c5{grid-column:span 5;} .lg-c7{grid-column:span 7;} .lg-c8{grid-column:span 8;} }
-.stat{border-radius:12px; padding:10px 12px; border:1px solid;}
-.stat .lbl{font-size:11px; font-weight:800; display:block; margin-bottom:3px;}
-.stat .val{font-size:19px; font-weight:800; font-family:monospace,monospace;}
-.stat.blue{background:var(--blue-bg); border-color:#bfdbfe; color:var(--blue);}
-.stat.green{background:var(--green-bg); border-color:#bbf7d0; color:#166534;}
-.stat.red{background:var(--red-bg); border-color:#fecaca; color:#991b1b;}
-.stat.yellow{background:var(--yellow-bg); border-color:#fde68a; color:#854d0e;}
+    .shell{max-width:1200px; margin:0 auto; background:#fff; border:1px solid var(--slate-200); border-radius:14px; padding:10px;}
+    .app-header{text-align:center; padding:10px 0; margin-bottom:12px;}
+    .app-header h1{color:#b91c1c; font-size:20px; letter-spacing:1px; margin:0;}
+    .app-header p{color:var(--slate-500); font-size:11px; margin:3px 0 0;}
 
-.badge-btn{background:var(--slate-100); color:var(--slate-700); font-weight:700; padding:7px 12px; border-radius:8px; font-size:12px; border:1px solid var(--slate-200); margin:0 6px 6px 0;}
-.badge-btn.active{background:var(--indigo); color:#fff; border-color:var(--indigo);}
+    .card{background:#fff; border:1px solid var(--slate-200); border-radius:12px; padding:12px; box-shadow:0 1px 3px rgba(0,0,0,.04);}
+    .card + .card{margin-top:10px;}
+    .card h3{font-size:12px; font-weight:800; color:var(--slate-800); margin:0 0 8px; padding-bottom:6px; border-bottom:1px solid var(--slate-200);}
+    .grid{display:grid; gap:10px;}
+    .g2{grid-template-columns:repeat(2,1fr);}
+    .g3{grid-template-columns:repeat(3,1fr);}
+    .g4{grid-template-columns:repeat(4,1fr);}
+    @media(min-width:900px){ .lg-g12{display:grid; grid-template-columns:repeat(12,1fr); gap:14px;} .lg-c4{grid-column:span 4;} .lg-c5{grid-column:span 5;} .lg-c7{grid-column:span 7;} .lg-c8{grid-column:span 8;} }
+    .stat{border-radius:12px; padding:10px 12px; border:1px solid;}
+    .stat .lbl{font-size:11px; font-weight:800; display:block; margin-bottom:3px;}
+    .stat .val{font-size:19px; font-weight:800; font-family:monospace,monospace;}
+    .stat.blue{background:var(--blue-bg); border-color:#bfdbfe; color:var(--blue);}
+    .stat.green{background:var(--green-bg); border-color:#bbf7d0; color:#166534;}
+    .stat.red{background:var(--red-bg); border-color:#fecaca; color:#991b1b;}
+    .stat.yellow{background:var(--yellow-bg); border-color:#fde68a; color:#854d0e;}
 
-.progress-track{width:100%; background:var(--slate-200); border-radius:20px; height:11px; overflow:hidden; border:1px solid var(--slate-200);}
-.progress-fill{height:100%; background:linear-gradient(90deg,#22c55e,#eab308,#dc2626); transition:.4s;}
-.prow{display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:var(--slate-600); margin-bottom:4px;}
+    .badge-btn{background:var(--slate-100); color:var(--slate-700); font-weight:700; padding:7px 12px; border-radius:8px; font-size:12px; border:1px solid var(--slate-200); margin:0 6px 6px 0;}
+    .badge-btn.active{background:var(--indigo); color:#fff; border-color:var(--indigo);}
 
-/* ===== buttons ===== */
-.btn{padding:9px 8px; border-radius:8px; font-size:12px; font-weight:800; color:#fff; box-shadow:0 1px 3px rgba(0,0,0,.15);}
-.btn-green{background:var(--green);} .btn-green:hover{background:#15803d;}
-.btn-yellow{background:#eab308;} .btn-yellow:hover{background:#ca8a04;}
-.btn-red{background:var(--red);} .btn-red:hover{background:#b91c1c;}
-.btn-indigo{background:var(--indigo);} .btn-indigo:hover{background:var(--indigo-dark);}
-.btn-dark{background:var(--slate-900);} .btn-dark:hover{background:var(--slate-800);}
-.btn-gray{background:#cbd5e1; color:var(--slate-700);} .btn-gray:hover{background:#94a3b8;}
-.btn-outline{background:#fff; color:var(--indigo); border:1px solid var(--indigo);}
-.btn-full{width:100%;}
-.btn[disabled]{opacity:.6;}
+    .progress-track{width:100%; background:var(--slate-200); border-radius:20px; height:11px; overflow:hidden; border:1px solid var(--slate-200);}
+    .progress-fill{height:100%; background:linear-gradient(90deg,#22c55e,#eab308,#dc2626); transition:.4s;}
+    .prow{display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:var(--slate-600); margin-bottom:4px;}
 
-/* ===== tables ===== */
-.tbl-wrap{overflow-x:auto; border:1px solid var(--slate-200); border-radius:10px;}
-table.dt{width:100%; border-collapse:collapse; font-size:12px;}
-table.dt thead{background:#eef2ff;}
-table.dt th{padding:7px 5px; font-weight:800; text-align:center; border-bottom:1px solid var(--slate-200); border-right:1px solid var(--slate-100); white-space:nowrap;}
-table.dt td{padding:6px 5px; border-bottom:1px solid var(--slate-100); border-right:1px solid var(--slate-100); text-align:center;}
-table.dt td.l{text-align:left;} table.dt td.r{text-align:right; font-family:monospace,monospace;}
-table.dt tr:last-child td{border-bottom:none;}
-.empty-note{padding:18px; text-align:center; color:var(--slate-400); font-weight:700; font-size:12px;}
+    .btn{padding:9px 8px; border-radius:8px; font-size:12px; font-weight:800; color:#fff; box-shadow:0 1px 3px rgba(0,0,0,.15);}
+    .btn-green{background:var(--green);} .btn-green:hover{background:#15803d;}
+    .btn-yellow{background:#eab308;} .btn-yellow:hover{background:#ca8a04;}
+    .btn-red{background:var(--red);} .btn-red:hover{background:#b91c1c;}
+    .btn-indigo{background:var(--indigo);} .btn-indigo:hover{background:var(--indigo-dark);}
+    .btn-dark{background:var(--slate-900);} .btn-dark:hover{background:var(--slate-800);}
+    .btn-gray{background:#cbd5e1; color:var(--slate-700);} .btn-gray:hover{background:#94a3b8;}
+    .btn-outline{background:#fff; color:var(--indigo); border:1px solid var(--indigo);}
+    .btn-full{width:100%;}
+    .btn[disabled]{opacity:.6;}
 
-/* ===== nav ===== */
-.bottom-nav{position:fixed; bottom:0; left:0; right:0; height:62px; background:#fff; box-shadow:0 -4px 12px rgba(0,0,0,.06); display:flex; z-index:40;}
-.nav-tab{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:var(--slate-500); border-top:3px solid transparent;}
-.nav-tab .ic{font-size:17px; margin-bottom:2px;}
-.nav-tab.active{color:var(--indigo); border-top-color:var(--indigo); background:var(--slate-50);}
+    .tbl-wrap{overflow-x:auto; border:1px solid var(--slate-200); border-radius:10px;}
+    table.dt{width:100%; border-collapse:collapse; font-size:12px;}
+    table.dt thead{background:#eef2ff;}
+    table.dt th{padding:7px 5px; font-weight:800; text-align:center; border-bottom:1px solid var(--slate-200); border-right:1px solid var(--slate-100); white-space:nowrap;}
+    table.dt td{padding:6px 5px; border-bottom:1px solid var(--slate-100); border-right:1px solid var(--slate-100); text-align:center;}
+    table.dt td.l{text-align:left;} table.dt td.r{text-align:right; font-family:monospace,monospace;}
+    table.dt tr:last-child td{border-bottom:none;}
+    .empty-note{padding:18px; text-align:center; color:var(--slate-400); font-weight:700; font-size:12px;}
 
-.section-title{text-align:center; font-weight:800; color:var(--indigo); font-size:14px; padding-bottom:8px; border-bottom:1px solid var(--slate-200); margin-bottom:10px;}
-.small-note{font-size:11px; color:var(--slate-500); margin-top:6px; line-height:1.5;}
-.top-info{width:100%; border-collapse:collapse; margin-bottom:10px; background:var(--slate-50); border:1px solid var(--slate-200);}
-.top-info td{padding:6px 8px; text-align:center; font-weight:800; font-size:11px; border:1px solid var(--slate-200);}
+    .bottom-nav{position:fixed; bottom:0; left:0; right:0; height:62px; background:#fff; box-shadow:0 -4px 12px rgba(0,0,0,.06); display:flex; z-index:40;}
+    .nav-tab{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:var(--slate-500); border-top:3px solid transparent;}
+    .nav-tab .ic{font-size:17px; margin-bottom:2px;}
+    .nav-tab.active{color:var(--indigo); border-top-color:var(--indigo); background:var(--slate-50);}
 
-@media print{
-  body{padding:0; background:#fff;}
-  .no-print{display:none !important;}
-  .shell{border:none; box-shadow:none; max-width:100%;}
-}
-</style>
+    .section-title{text-align:center; font-weight:800; color:var(--indigo); font-size:14px; padding-bottom:8px; border-bottom:1px solid var(--slate-200); margin-bottom:10px;}
+    .small-note{font-size:11px; color:var(--slate-500); margin-top:6px; line-height:1.5;}
+
+    @media print{
+      body{padding:0; background:#fff;}
+      .no-print{display:none !important;}
+      .shell{border:none; box-shadow:none; max-width:100%;}
+    }
+  </style>
 </head>
 <body>
 
-<!-- ================= PIN LOCK ================= -->
+<!-- PIN LOCK -->
 <div id="pinLockScreen" class="overlay">
   <div class="box">
     <div style="font-size:36px;">📊</div>
@@ -131,16 +124,15 @@ table.dt tr:last-child td{border-bottom:none;}
       <input type="password" id="appPinInput" class="pin-input" placeholder="••••" maxlength="6" inputmode="numeric">
       <button class="btn btn-indigo btn-full" style="height:42px; margin-top:12px;" onclick="checkAppPin()">সাইন ইন 🔓</button>
       <p id="pinErrorMsg" class="err hidden"></p>
-      <p class="small-note">ডিফল্ট পিন: <b>1234</b> (প্রথমবার লগইনের পর সেটিংস থেকে পরিবর্তন করুন)</p>
+      <p class="small-note">ডিফল্ট পিন: <b>1234</b></p>
     </div>
   </div>
 </div>
 
-<!-- ================= SETTINGS GATE ================= -->
+<!-- SETTINGS GATE -->
 <div id="settingsGateModal" class="overlay light hidden">
   <div class="box" style="max-width:300px;">
-    <h3 style="font-size:13px; font-weight:800; margin:0 0 6px;">🔐 সেটিংস সিকিউরিটি ভেরিফিকেশন</h3>
-    <p class="small-note" style="margin-bottom:8px;">সেটিংসে প্রবেশ করতে অ্যাপ পিনটি দিন</p>
+    <h3 style="font-size:13px; font-weight:800; margin:0 0 6px;">🔐 সেটিংস পিন ভেরিফিকেশন</h3>
     <input type="password" id="settingsGatePin" class="pin-input" style="font-size:16px; height:42px;" placeholder="••••" maxlength="6" inputmode="numeric">
     <div style="display:flex; gap:8px; margin-top:10px;">
       <button class="btn btn-gray" style="flex:1;" onclick="cancelSettingsAccess()">বাতিল</button>
@@ -149,19 +141,19 @@ table.dt tr:last-child td{border-bottom:none;}
   </div>
 </div>
 
-<!-- ================= TRANSFER MODAL ================= -->
+<!-- TRANSFER MODAL -->
 <div id="transferModal" class="overlay light hidden">
   <div class="box" style="max-width:380px; text-align:left;">
     <h3 style="font-size:14px; font-weight:800; color:var(--indigo-dark); display:flex; justify-content:space-between; border-bottom:1px solid var(--slate-200); padding-bottom:8px; margin:0 0 10px;">
-      <span>🔄 ব্যালেন্স ট্রান্সফার (আন্তঃ-হিসাব)</span>
+      <span>🔄 ব্যালেন্স ট্রান্সফার</span>
       <span style="cursor:pointer; color:var(--slate-400);" onclick="closeTransferModal()">✕</span>
     </h3>
     <div class="grid g2">
-      <div><label>কোথা থেকে (From):</label><select id="transferFromAcc"></select></div>
-      <div><label>কোথায় (To):</label><select id="transferToAcc"></select></div>
-      <div><label>স্থানান্তর তারিখ:</label><input type="date" id="transferDate"></div>
-      <div><label>টাকার পরিমাণ:</label><input type="number" id="transferTaka" placeholder="0.00" inputmode="decimal"></div>
-      <div style="grid-column:1/-1;"><label>বিবরণ (Description):</label><input type="text" id="transferDesc" placeholder="সংক্ষিপ্ত নোট..."></div>
+      <div><label>উৎস (From):</label><select id="transferFromAcc"></select></div>
+      <div><label>গন্তব্য (To):</label><select id="transferToAcc"></select></div>
+      <div><label>তারিখ:</label><input type="date" id="transferDate"></div>
+      <div><label>টাকা:</label><input type="number" id="transferTaka" placeholder="0.00" inputmode="decimal"></div>
+      <div style="grid-column:1/-1;"><label>বিবরণ:</label><input type="text" id="transferDesc" placeholder="সংক্ষিপ্ত নোট..."></div>
     </div>
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button class="btn btn-gray" style="flex:1;" onclick="closeTransferModal()">বাতিল</button>
@@ -170,11 +162,11 @@ table.dt tr:last-child td{border-bottom:none;}
   </div>
 </div>
 
-<!-- ================= RESTORE CONFIRM MODAL ================= -->
+<!-- RESTORE MODAL -->
 <div id="restoreModal" class="overlay light hidden">
   <div class="box" style="max-width:340px;">
-    <h3 style="font-size:13px; font-weight:800; margin:0 0 8px;">⚠️ ডাটাবেজ রিস্টোর নিশ্চিতকরণ</h3>
-    <p class="small-note">এই ব্যাকআপ ফাইলটি রিস্টোর করলে বর্তমান সমস্ত ডাটা মুছে গিয়ে ব্যাকআপ ফাইলের ডাটা দিয়ে প্রতিস্থাপিত হবে। এই কাজটি ফিরিয়ে নেওয়া যাবে না। আপনি কি নিশ্চিত?</p>
+    <h3 style="font-size:13px; font-weight:800; margin:0 0 8px;">⚠️ ডাটাবেজ রিস্টোর</h3>
+    <p class="small-note">বর্তমান ডাটা মুছে ব্যাকআপ ফাইল দিয়ে প্রতিস্থাপিত হবে। আপনি কি নিশ্চিত?</p>
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button class="btn btn-gray" style="flex:1;" onclick="closeRestoreModal()">বাতিল</button>
       <button class="btn btn-red" style="flex:1;" onclick="confirmRestore()">হ্যাঁ, রিস্টোর করুন</button>
@@ -184,14 +176,14 @@ table.dt tr:last-child td{border-bottom:none;}
 
 <div id="toast"></div>
 
-<!-- ================= MAIN APP ================= -->
+<!-- MAIN CONTENT -->
 <div id="mainAppContent" class="shell hidden">
   <div class="app-header no-print">
     <h1>SELF ACCOUNTING SYSTEM</h1>
-    <p>লোকাল / অফলাইন সংস্করণ &nbsp;•&nbsp; সকল ডাটা এই ডিভাইসেই সংরক্ষিত থাকে</p>
+    <p>লোকাল / অফলাইন সংস্করণ &nbsp;•&nbsp; সকল ডাটা সংরক্ষিত থাকে</p>
   </div>
 
-  <!-- ============ DASHBOARD ============ -->
+  <!-- DASHBOARD -->
   <div id="dashboardViewScreen">
     <div class="card">
       <div class="grid g2" style="align-items:end;">
@@ -211,21 +203,21 @@ table.dt tr:last-child td{border-bottom:none;}
       <div class="lg-c7">
         <div class="grid g2">
           <div class="stat blue"><span class="lbl">🏦 নির্বাচিত মাসের ব্যালেন্স</span><span id="dashBalance" class="val">0</span> ৳</div>
-          <div class="stat green"><span class="lbl">💰 সর্বমোট জমা (শুরুর জের+আয়)</span><span id="dashIncome" class="val">0</span> ৳</div>
-          <div class="stat red"><span class="lbl">💸 মোট ব্যয় (নির্বাচিত মাস)</span><span id="dashExpense" class="val">0</span> ৳</div>
-          <div class="stat yellow"><span class="lbl">⏳ পেন্ডিং (নির্বাচিত মাস)</span><span id="dashPending" class="val">0</span> ৳</div>
+          <div class="stat green"><span class="lbl">💰 সর্বমোট জমা</span><span id="dashIncome" class="val">0</span> ৳</div>
+          <div class="stat red"><span class="lbl">💸 মোট ব্যয়</span><span id="dashExpense" class="val">0</span> ৳</div>
+          <div class="stat yellow"><span class="lbl">⏳ পেন্ডিং</span><span id="dashPending" class="val">0</span> ৳</div>
         </div>
         <div class="card" style="margin-top:10px;">
           <h3>📈 বাজেট ব্যবহার ও ব্যয় ইনসাইট</h3>
-          <div class="prow"><span>📊 আয়ের ভিত্তিতে ব্যয় অনুপাত</span><span id="dashPercentText">আয়ের 0% খরচ হয়েছে</span></div>
+          <div class="prow"><span>📊 আয়ের ভিত্তিতে ব্যয়</span><span id="dashPercentText">আয়ের 0% খরচ হয়েছে</span></div>
           <div class="progress-track"><div id="dashProgressBar" class="progress-fill" style="width:0%"></div></div>
-          <div class="prow" style="margin-top:10px;"><span>⚖️ বর্তমান ব্যালেন্সের ভিত্তিতে ব্যয় অনুপাত</span><span id="dashBalancePercentText">ব্যালেন্সের 0% খরচ হয়েছে</span></div>
+          <div class="prow" style="margin-top:10px;"><span>⚖️ ব্যালেন্সের ভিত্তিতে ব্যয়</span><span id="dashBalancePercentText">ব্যালেন্সের 0% খরচ হয়েছে</span></div>
           <div class="progress-track"><div id="dashBalanceProgressBar" class="progress-fill" style="width:0%"></div></div>
         </div>
       </div>
       <div class="lg-c5" style="margin-top:10px;">
         <div class="card" style="height:100%;">
-          <h3>🔥 নির্বাচিত মাসের সর্বোচ্চ ব্যয়ের খাত</h3>
+          <h3>🔥 সর্বোচ্চ ব্যয়ের খাত</h3>
           <ul id="dashTopExpensesList" style="list-style:none; padding:0; margin:0; font-size:12px;">
             <li class="empty-note">কোনো খরচের রেকর্ড পাওয়া যায়নি</li>
           </ul>
@@ -234,7 +226,7 @@ table.dt tr:last-child td{border-bottom:none;}
     </div>
   </div>
 
-  <!-- ============ ENTRY ============ -->
+  <!-- ENTRY -->
   <div id="entryViewScreen" class="hidden">
     <div class="section-title no-print">📝 ডাটা এন্ট্রি প্যানেল</div>
     <div class="lg-g12">
@@ -252,7 +244,7 @@ table.dt tr:last-child td{border-bottom:none;}
           </div>
           <div><label>তারিখ <span class="req">*</span>:</label><input type="date" id="date" onchange="updateLiveSummaryAndEntries();"></div>
           <div><label>ক্যাটাগরি <span class="req">*</span>:</label><select id="category" onchange="syncCategory(this.value)"></select></div>
-          <div><label>Type (টাইপ) <span class="req">*</span>:</label>
+          <div><label>টাইপ <span class="req">*</span>:</label>
             <select id="type">
               <option value="" disabled selected>-সিলেক্ট-</option>
               <option value="Income">Income (জমা)</option>
@@ -260,29 +252,29 @@ table.dt tr:last-child td{border-bottom:none;}
               <option value="Pending">Pending (পেন্ডিং)</option>
             </select>
           </div>
-          <div><label>Taka (টাকা) <span class="req">*</span>:</label><input type="number" id="taka" placeholder="0.00" inputmode="decimal"></div>
-          <div style="grid-column:1/-1;"><label>Description (বিবরণ):</label><input type="text" id="desc" placeholder="বিবরণ লিখুন"></div>
+          <div><label>টাকা <span class="req">*</span>:</label><input type="number" id="taka" placeholder="0.00" inputmode="decimal"></div>
+          <div style="grid-column:1/-1;"><label>বিবরণ:</label><input type="text" id="desc" placeholder="বিবরণ লিখুন"></div>
         </div>
         <div class="grid g4" style="margin-top:10px;">
           <button class="btn btn-green" onclick="saveRecord()">💾 সেভ</button>
           <button class="btn btn-yellow" onclick="clearForm()">🧹 রিসেট</button>
           <button class="btn btn-red" onclick="deleteRecord()">🗑️ ডিলিট</button>
-          <button class="btn btn-indigo" onclick="openTransferModal()">🔄 ট্রান্স</button>
+          <button class="btn btn-indigo" onclick="openTransferModal()">🔄 ট্রান্সফার</button>
         </div>
       </div>
 
       <div class="lg-c7" style="margin-top:10px;">
         <div class="grid g3" style="margin-bottom:10px;">
-          <div class="stat green" style="text-align:center;"><span class="lbl">ঐ দিনের আয়</span><span id="liveIncome" class="val">0</span> ৳</div>
-          <div class="stat red" style="text-align:center;"><span class="lbl">ঐ দিনের ব্যয়</span><span id="liveExpense" class="val">0</span> ৳</div>
-          <div class="stat blue" style="text-align:center;"><span class="lbl">দিন শেষে ব্যালেন্স</span><span id="liveBalance" class="val">0</span> ৳</div>
+          <div class="stat green" style="text-align:center;"><span class="lbl">দিনের আয়</span><span id="liveIncome" class="val">0</span> ৳</div>
+          <div class="stat red" style="text-align:center;"><span class="lbl">দিনের ব্যয়</span><span id="liveExpense" class="val">0</span> ৳</div>
+          <div class="stat blue" style="text-align:center;"><span class="lbl">দিনের ব্যালেন্স</span><span id="liveBalance" class="val">0</span> ৳</div>
         </div>
         <div class="card" style="padding:6px;">
-          <h3 style="padding:6px 6px 8px;">📋 সর্বশেষ ১০টি রেকর্ড (লাইভ)</h3>
+          <h3 style="padding:6px 6px 8px;">📋 সর্বশেষ ১০টি রেকর্ড</h3>
           <div class="tbl-wrap">
             <table class="dt">
               <thead><tr><th>SL</th><th>তারিখ</th><th>বিবরণ</th><th>আয়</th><th>ব্যয়</th><th>পেন্ডিং</th></tr></thead>
-              <tbody id="entryHistoryTableBody"><tr><td colspan="6" class="empty-note">অ্যাকাউন্ট সিলেক্ট করলে লাইভ রেকর্ড দেখাবে...</td></tr></tbody>
+              <tbody id="entryHistoryTableBody"><tr><td colspan="6" class="empty-note">অ্যাকাউন্ট সিলেক্ট করুন...</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -290,12 +282,12 @@ table.dt tr:last-child td{border-bottom:none;}
     </div>
   </div>
 
-  <!-- ============ REPORT ============ -->
+  <!-- REPORT -->
   <div id="reportViewScreen" class="hidden">
     <div class="lg-g12">
       <div class="lg-c4 no-print">
         <div class="card">
-          <h3>📊 রিপোর্ট কন্ট্রোল সেন্টার</h3>
+          <h3>📊 রিপোর্ট কন্ট্রোল</h3>
           <div class="grid" style="gap:8px;">
             <div><label>হিসাবের নাম:</label><select id="reportName" onchange="syncAccountName(this.value); updateLiveSummaryAndEntries();"></select></div>
             <div><label>ক্যাটাগরি:</label><select id="reportCategory" onchange="syncCategory(this.value)"></select></div>
@@ -305,18 +297,18 @@ table.dt tr:last-child td{border-bottom:none;}
             </div>
           </div>
           <div class="grid g2" style="margin-top:8px;">
-            <button class="btn btn-dark" onclick="runReport(1)">📋 ডিটেইলস ভিউ</button>
-            <button class="btn btn-dark" onclick="runReport(2)">🗂️ ক্যাটাগরি ভিউ</button>
-            <button class="btn btn-dark" onclick="runReport(3)">⏳ পেন্ডিং রিপোর্ট</button>
+            <button class="btn btn-dark" onclick="runReport(1)">📋 ডিটেইলস</button>
+            <button class="btn btn-dark" onclick="runReport(2)">🗂️ ক্যাটাগরি</button>
+            <button class="btn btn-dark" onclick="runReport(3)">⏳ পেন্ডিং</button>
             <button class="btn btn-dark" onclick="runReport(4)">🎯 ক্যাট-ডিটেইলস</button>
             <button class="btn btn-dark" onclick="getAllEntriesDescendingReportUI()">📜 সকল এন্ট্রি</button>
-            <button class="btn btn-dark" onclick="loadCashbook()">📓 ক্যাশবুক রিপোর্ট</button>
+            <button class="btn btn-dark" onclick="loadCashbook()">📓 ক্যাশবুক</button>
           </div>
-          <button class="btn btn-red btn-full" style="margin-top:8px;" onclick="window.print()">🖨️ প্রিন্ট / পিডিএফ ডাউনলোড</button>
+          <button class="btn btn-red btn-full" style="margin-top:8px;" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
         </div>
         <div class="card">
-          <h3>📊 মাসিক ব্যালেন্স স্টেটমেন্ট</h3>
-          <label>বছর সিলেক্ট করুন</label>
+          <h3>📊 বার্ষিক/মাসিক রিপোর্ট</h3>
+          <label>বছর:</label>
           <select id="reportYear"></select>
           <div class="grid g2" style="margin-top:8px;">
             <button class="btn btn-indigo" onclick="getMonthlyBalanceReportUI()">🔎 মাসিক ব্যালেন্স</button>
@@ -326,10 +318,10 @@ table.dt tr:last-child td{border-bottom:none;}
       </div>
 
       <div class="lg-c8 card">
-        <div id="loader" class="hidden" style="text-align:center; padding:14px; color:var(--indigo); font-weight:800;">⚙️ ডাটা জেনারেট হচ্ছে...</div>
+        <div id="loader" class="hidden" style="text-align:center; padding:14px; color:var(--indigo); font-weight:800;">⚙️ ডাটা লোড হচ্ছে...</div>
         <div id="reportDisplayContainer">
           <div id="defaultHistorySection">
-            <h3>📋 সর্বশেষ ১০টি রেকর্ড (লাইভ)</h3>
+            <h3>📋 সর্বশেষ রেকর্ডসমূহ</h3>
             <div class="tbl-wrap">
               <table class="dt">
                 <thead><tr><th>SL</th><th>তারিখ</th><th>বিবরণ</th><th>আয়</th><th>ব্যয়</th><th>পেন্ডিং</th></tr></thead>
@@ -346,32 +338,32 @@ table.dt tr:last-child td{border-bottom:none;}
     </div>
   </div>
 
-  <!-- ============ SETTINGS ============ -->
+  <!-- SETTINGS -->
   <div id="settingsViewScreen" class="hidden">
-    <div class="section-title">⚙️ অ্যাপ সেটিংস ও ড্রপডাউন কন্ট্রোল</div>
+    <div class="section-title">⚙️ সেটিং ও ড্রপডাউন কন্ট্রোল</div>
     <div class="grid g2">
       <div class="card">
-        <h3>🔐 সিকিউরিটি পিন কোড পরিবর্তন</h3>
-        <input type="password" id="oldPinInput" placeholder="বর্তমান পিন দিন" maxlength="6" inputmode="numeric" style="text-align:center; letter-spacing:4px; margin-bottom:8px;">
-        <input type="password" id="newPinInput" placeholder="নতুন ৪-৬ ডিজিটের পিন দিন" maxlength="6" inputmode="numeric" style="text-align:center; letter-spacing:4px; margin-bottom:8px;">
-        <button class="btn btn-indigo btn-full" onclick="changeSystemPin()">নিরাপদ পিন আপডেট করুন 💾</button>
+        <h3>🔐 পিন পরিবর্তন</h3>
+        <input type="password" id="oldPinInput" placeholder="বর্তমান পিন" maxlength="6" inputmode="numeric" style="text-align:center; margin-bottom:8px;">
+        <input type="password" id="newPinInput" placeholder="নতুন পিন" maxlength="6" inputmode="numeric" style="text-align:center; margin-bottom:8px;">
+        <button class="btn btn-indigo btn-full" onclick="changeSystemPin()">পিন আপডেট করুন 💾</button>
       </div>
 
       <div class="card">
-        <h3>🛠️ ড্রপডাউন আইটেম কনফিগারেশন</h3>
+        <h3>🛠️ ড্রপডাউন কনফিগারেশন</h3>
         <div class="grid g2">
           <div><label>লিস্ট টাইপ:</label>
             <select id="manageType" onchange="loadManagementOptions()">
-              <option value="name">হিসাবের নাম (Account Name)</option>
-              <option value="category">ক্যাটাগরি (Category)</option>
+              <option value="name">হিসাবের নাম</option>
+              <option value="category">ক্যাটাগরি</option>
             </select>
           </div>
-          <div><label>বিদ্যমান আইটেমসমূহ:</label>
+          <div><label>বিদ্যমান আইটেম:</label>
             <select id="existingItemsSelect" onchange="prepareEditItem()"><option value="">-নতুন যোগ করুন-</option></select>
           </div>
         </div>
-        <label style="margin-top:8px;">আইটেমের নাম (লিখুন/সম্পাদনা করুন):</label>
-        <input type="text" id="itemValueInput" placeholder="আইটেমের নাম লিখুন">
+        <label style="margin-top:8px;">আইটেমের নাম:</label>
+        <input type="text" id="itemValueInput" placeholder="নাম লিখুন">
         <div style="display:flex; gap:8px; margin-top:8px;">
           <button class="btn btn-green" style="flex:1;" onclick="saveDropdownData()">💾 সংরক্ষণ</button>
           <button class="btn btn-red hidden" id="btnDeleteItem" style="flex:1;" onclick="deleteDropdownData()">🗑️ ডিলিট</button>
@@ -379,12 +371,11 @@ table.dt tr:last-child td{border-bottom:none;}
       </div>
 
       <div class="card">
-        <h3>💾 ডাটাবেজ ব্যাকআপ / রিস্টোর</h3>
-        <p class="small-note">সমস্ত ডাটা (রেকর্ড, ড্রপডাউন লিস্ট, পিন) এই ব্রাউজারের লোকাল স্টোরেজে সেভ থাকে। নিয়মিত ব্যাকআপ ফাইল ডাউনলোড করে ফোন/কম্পিউটারের স্টোরেজে বা গুগল ড্রাইভে রেখে দিন — প্রয়োজনে যেকোনো সময় রিস্টোর করা যাবে।</p>
+        <h3>💾 ব্যাকআপ ও রিস্টোর</h3>
         <div style="display:flex; gap:8px; margin-top:8px;">
           <button class="btn btn-indigo" style="flex:1;" onclick="exportBackup()">⬇️ ব্যাকআপ ডাউনলোড</button>
           <label class="btn btn-outline" style="flex:1; display:flex; align-items:center; justify-content:center; margin:0;">
-            ⬆️ রিস্টোর করুন
+            ⬆️ রিস্টোর
             <input type="file" id="restoreFileInput" accept="application/json" class="hidden" onchange="handleRestoreFile(event)">
           </label>
         </div>
@@ -398,7 +389,7 @@ table.dt tr:last-child td{border-bottom:none;}
   </div>
 </div>
 
-<!-- ============ BOTTOM NAV ============ -->
+<!-- BOTTOM NAV -->
 <div class="bottom-nav no-print hidden" id="bottomNavBar">
   <div id="tabDashboard" class="nav-tab active" onclick="switchTab('dashboard')"><span class="ic">📊</span><span>ড্যাশবোর্ড</span></div>
   <div id="tabEntry" class="nav-tab" onclick="switchTab('entry')"><span class="ic">📝</span><span>ডাটা এন্ট্রি</span></div>
@@ -406,35 +397,7 @@ table.dt tr:last-child td{border-bottom:none;}
   <div id="tabSettings" class="nav-tab" onclick="settingsClickTrigger()"><span class="ic">⚙️</span><span>সেটিংস</span></div>
 </div>
 
-<script src="app.js"></script>
-
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Accounting System App</title>
-  
-  <!-- Manifest ফাইল লিঙ্ক -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#007bff">
-</head>
-<body>
-
-  <h1>Self Accounting System</h1>
-
-  <!-- Service Worker Registration -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker Registered!', reg))
-        .catch(err => console.log('Service Worker Failed!', err));
-    });
-  }
-</script>
-  
-<!-- ফায়ারবেস লাইব্রেরি এবং সঠিক রেজিস্ট্রেশন -->
+<!-- Firebase SDK Integration -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -449,25 +412,21 @@ table.dt tr:last-child td{border-bottom:none;}
     appId: "1:829028496794:web:b5515a34f11212aa52b623"
   };
 
-  // ফায়ারবেস কানেক্ট করা
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
 
-  // app.js ফাইলের সাথে কানেক্ট করার জন্য window অবজেক্টে সেট করা
   window.firebaseDB = database;
   window.firebaseRef = ref;
   window.firebaseSet = set;
   window.firebaseOnValue = onValue;
-
-  console.log("Firebase Successfully Connected!");
 </script>
 
-<!-- Service Worker রেজিস্টার (Relative Path সহ) -->
+<!-- Service Worker Register -->
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker Registered!', reg))
+        .then(reg => console.log('Service Worker Registered!'))
         .catch(err => console.log('Service Worker Failed!', err));
     });
   }
