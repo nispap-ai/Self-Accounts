@@ -30,14 +30,14 @@ function saveDB() {
   try {
     localStorage.setItem(DB_KEY, JSON.stringify(db));
     
-    // Firebase-এ ডাটা পুশ করা
+    // ফায়ারবেসে অটো-সেভ হবে
     if (window.firebaseDB && window.firebaseSet && window.firebaseRef) {
       window.firebaseSet(window.firebaseRef(window.firebaseDB, 'myAppData/db'), db);
     }
 
     return true;
   } catch (e) {
-    showToastAlert("⚠️ সংরক্ষণে সমস্যা হয়েছে! স্টোরেজ পূর্ণ হয়ে থাকতে পারে।");[cite: 3]
+    showToastAlert("⚠️ সংরক্ষণে সমস্যা হয়েছে!");[cite: 3]
     return false;
   }
 }
