@@ -37,7 +37,7 @@ function saveDB() {
 
     return true;
   } catch (e) {
-    showToastAlert("⚠️ সংরক্ষণে সমস্যা হয়েছে!");[cite: 3]
+    showToastAlert("⚠️ সংরক্ষণে সমস্যা হয়েছে!");
     return false;
   }
 }
