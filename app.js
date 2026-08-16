@@ -31,7 +31,7 @@ function saveDB() {
   try {
     localStorage.setItem(DB_KEY, JSON.stringify(db));
     
-    // ফায়ারবেসে অটো-সেভ হবে (যদি লাইব্রেরি লোড থাকে)
+    // ফায়ারবেসে অটো-সেভ (যদি উপলব্ধ থাকে)
     if (window.firebaseDB && window.firebaseSet && window.firebaseRef) {
       window.firebaseSet(window.firebaseRef(window.firebaseDB, 'myAppData/db'), db);
     }
@@ -106,7 +106,8 @@ function checkAppPin() {
       errorMsg.innerText = "❌ ভুল পিন নম্বর! আবার চেষ্টা করুন।";
       errorMsg.classList.remove("hidden");
     }
-    document.getElementById("appPinInput").value = "";
+    const input = document.getElementById("appPinInput");
+    if(input) input.value = "";
     return;
   }
 
@@ -148,7 +149,8 @@ function verifySettingsAccess() {
     switchTab("settings");
   } else {
     showToastAlert("❌ ভুল পিন! সেটিংসে অ্যাক্সেস অস্বীকৃত।");
-    document.getElementById("settingsGatePin").value = "";
+    const sgPin = document.getElementById("settingsGatePin");
+    if(sgPin) sgPin.value = "";
   }
 }
 
@@ -161,8 +163,8 @@ function changeSystemPin() {
   db.pin = newPin;
   saveDB();
   showToastAlert("🔐 সিকিউরিটি পিন সফলভাবে পরিবর্তন করা হয়েছে।");
-  document.getElementById("oldPinInput").value = "";
-  document.getElementById("newPinInput").value = "";
+  if(document.getElementById("oldPinInput")) document.getElementById("oldPinInput").value = "";
+  if(document.getElementById("newPinInput")) document.getElementById("newPinInput").value = "";
   isSettingsUnlocked = false;
   switchTab("entry");
 }
@@ -222,14 +224,21 @@ function initializeAppEngine() {
 
 /* ---------------------------- dropdown syncing --------------------------- */
 function syncAccountName(v) {
-  if (document.getElementById("name")) document.getElementById("name").value = v;
-  if (document.getElementById("reportName")) document.getElementById("reportName").value = v;
-  if (document.getElementById("dashAccountSelect")) document.getElementById("dashAccountSelect").value = v;
+  if(!v) return;
+  const n = document.getElementById("name");
+  const rn = document.getElementById("reportName");
+  const da = document.getElementById("dashAccountSelect");
+  if (n) n.value = v;
+  if (rn) rn.value = v;
+  if (da) da.value = v;
 }
 
 function syncCategory(v) {
-  if (document.getElementById("category")) document.getElementById("category").value = v;
-  if (document.getElementById("reportCategory")) document.getElementById("reportCategory").value = v;
+  if(!v) return;
+  const c = document.getElementById("category");
+  const rc = document.getElementById("reportCategory");
+  if (c) c.value = v;
+  if (rc) rc.value = v;
 }
 
 function reloadDropdowns() {
@@ -310,7 +319,6 @@ function prepareEditItem() {
   if (document.getElementById("btnDeleteItem")) document.getElementById("btnDeleteItem").classList.toggle("hidden", !selected);
 }
 
-/* --- সংশোধিত: Dropdown Data সেভ করার ফাংশন --- */
 function saveDropdownData() {
   const type = val("manageType");
   const oldVal = val("existingItemsSelect");
@@ -345,7 +353,6 @@ function saveDropdownData() {
   loadManagementOptions();
 }
 
-/* --- সংশোধিত: Dropdown Data ডিলিট করার ফাংশন --- */
 function deleteDropdownData() {
   const type = val("manageType");
   const v = val("existingItemsSelect");
@@ -501,28 +508,50 @@ function updateLiveSummaryAndEntries() {
 }
 
 function saveRecord() {
-  const obj = { slno: val("slno"), name: val("name"), date: val("date"), category: val("category"), desc: val("desc"), type: val("type"), taka: val("taka") };
+  const obj = { 
+    slno: val("slno"), 
+    name: val("name"), 
+    date: val("date"), 
+    category: val("category"), 
+    desc: val("desc"), 
+    type: val("type"), 
+    taka: val("taka") 
+  };
+
   if (!obj.name || !obj.date || !obj.category || !obj.type || !obj.taka) {
     showToastAlert("⚠️ ত্রুটি: হিসাবের নাম, তারিখ, ক্যাটাগরি, টাইপ এবং টাকা প্রদান করা বাধ্যতামুলক!");
     return;
   }
+
   let rowIdx = -1;
   let finalSl = obj.slno ? parseInt(obj.slno) : null;
   if (obj.slno) rowIdx = db.records.findIndex(r => String(r.sl) === String(obj.slno).trim());
+
   if (rowIdx === -1 && !finalSl) {
     let maxSl = 0;
     db.records.forEach(r => { const s = parseInt(r.sl) || 0; if (s > maxSl) maxSl = s; });
     finalSl = maxSl + 1;
   }
-  const rec = { sl: finalSl, name: obj.name.trim(), date: obj.date, category: obj.category.trim(), desc: (obj.desc || "").trim(), type: obj.type, taka: parseFloat(obj.taka) || 0 };
+
+  const rec = { 
+    sl: finalSl, 
+    name: obj.name.trim(), 
+    date: obj.date, 
+    category: obj.category.trim(), 
+    desc: (obj.desc || "").trim(), 
+    type: obj.type, 
+    taka: parseFloat(obj.taka) || 0 
+  };
+
   if (rowIdx === -1) db.records.push(rec); else db.records[rowIdx] = rec;
   
-  saveDB();
-  showToastAlert(`সিরিয়াল নম্বর ${finalSl} সফলভাবে সংরক্ষিত হয়েছে।`);
-  clearForm();
-  updateLiveSummaryAndEntries();
-  triggerLiveUpdate();
-  updateDbStatsText();
+  if (saveDB()) {
+    showToastAlert(`সিরিয়াল নম্বর ${finalSl} সফলভাবে সংরক্ষিত হয়েছে।`);
+    clearForm();
+    updateLiveSummaryAndEntries();
+    triggerLiveUpdate();
+    updateDbStatsText();
+  }
 }
 
 function loadRecord() {
@@ -638,7 +667,6 @@ function topInfoBlock(title, accountName, from, to) {
   </div>`;
 }
 
-/* 1) ডিটেইলস ভিউ */
 function renderDetailsView(account, from, to) {
   if (!account) return { status: "error", message: "হিসাবের নাম সিলেক্ট করুন।" };
   const rows = getProcessedForAccount(account);
@@ -663,7 +691,6 @@ function renderDetailsView(account, from, to) {
   return { status: "success", html };
 }
 
-/* 2) ক্যাটাগরি ভিউ */
 function renderCategoryView(account, from, to) {
   if (!account) return { status: "error", message: "হিসাবের নাম সিলেক্ট করুন।" };
   const rows = getProcessedForAccount(account).filter(r => inRange(r.date, from, to));
@@ -684,7 +711,6 @@ function renderCategoryView(account, from, to) {
   return { status: "success", html };
 }
 
-/* 3) পেন্ডিং রিপোর্ট (সকল অ্যাকাউন্ট) */
 function renderPendingReport() {
   const rows = db.records.filter(r => r.type === "Pending").slice().sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
   if (!rows.length) return { status: "empty", html: "" };
@@ -700,7 +726,6 @@ function renderPendingReport() {
   return { status: "success", html };
 }
 
-/* 4) ক্যাট-ডিটেইলস */
 function renderCategoryDetail(account, cat, from, to) {
   if (!account || !cat) return { status: "error", message: "হিসাবের নাম ও ক্যাটাগরি সিলেক্ট করুন।" };
   const rows = db.records.filter(r => r.name === account && r.category === cat && inRange(r.date, from, to))
@@ -719,7 +744,6 @@ function renderCategoryDetail(account, cat, from, to) {
   return { status: "success", html };
 }
 
-/* 5) সকল এন্ট্রি (লেটেস্ট আগে) */
 function renderAllEntriesDescending(account) {
   if (!account) return { status: "error", message: "হিসাবের নাম সিলেক্ট করুন।" };
   const rows = db.records.filter(r => r.name === account).slice().sort((a, b) => a.date < b.date ? 1 : a.date > b.date ? -1 : (parseInt(b.sl) || 0) - (parseInt(a.sl) || 0));
@@ -739,7 +763,6 @@ function renderAllEntriesDescending(account) {
   return { status: "success", html };
 }
 
-/* 6) ক্যাশবুক (T-format) */
 function renderCashbook(account, from, to) {
   if (!account) return { status: "error", message: "হিসাবের নাম সিলেক্ট করুন।" };
   const rows = getProcessedForAccount(account);
@@ -784,7 +807,6 @@ function renderCashbook(account, from, to) {
   return { status: "success", html };
 }
 
-/* 7) মাসিক ব্যালেন্স স্টেটমেন্ট */
 function renderMonthlyBalance(account, year) {
   if (!account) return { status: "error", message: "হিসাবের নাম সিলেক্ট করুন।" };
   const y = parseInt(year);
@@ -818,7 +840,6 @@ function renderMonthlyBalance(account, year) {
   return { status: "success", html };
 }
 
-/* 8) ক্যাটাগরি ভিত্তিক বার্ষিক ব্যয় ম্যাট্রিক্স */
 function renderCategoryMonthlyExpense(account, year) {
   if (!account) return { status: "error", message: "হিসাবের নাম সিলেক্ট করুন।" };
   const y = parseInt(year);
@@ -959,37 +980,13 @@ function confirmRestore() {
 function updateDbStatsText() {
   const el = document.getElementById("dbStatsText");
   if (!el) return;
-  el.innerHTML = `মোট রেকর্ড: <b>${db.records.length}</b> টি &nbsp;•&nbsp; অ্যাকাউন্ট: <b>${db.names.length}</b> টি &nbsp;•&nbsp; ক্যাটাগরি: <b>${db.categories.length}</b> টি<br>ডাটা এই ব্রাউজারের localStorage-এ (এই ডিভাইসেই) সংরক্ষিত। নিয়মিত ব্যাকআপ ডাউনলোড করে রাখুন।`;
-}
-
-/* ------------------------ Google Sheet Data Sync ------------------------ */
-const webAppUrl = "https://script.google.com/macros/s/AKfycbww7IIZsRUYKERaxUx3n2U7e6uIU-kGPusotv8LLKiHKM9vk-TvRfGff2qcJlOm3vzYNQ/exec?action=getData";
-
-function renderDataToUI(data) {
-  // Google Sheets থেকে ডাটা আসলে UI তে দেখানোর জন্য এখানে লজিক দিন
-  console.log("UI Rerendered with Data:", data);
-}
-
-function loadSheetData() {
-  fetch(webAppUrl)
-    .then(response => {
-      if (!response.ok) throw new Error("Network response was not ok");
-      return response.json();
-    })
-    .then(data => {
-      console.log("গুগল শিট থেকে আসা ডেটা:", data);
-      renderDataToUI(data);
-    })
-    .catch(error => {
-      console.error("ডেটা লোড করতে সমস্যা হয়েছে:", error);
-    });
+  el.innerHTML = `মোট রেকর্ড: <b>${db.records.length}</b> টি &nbsp;•&nbsp; অ্যাকাউন্ট: <b>${db.names.length}</b> টি &nbsp;•&nbsp; ক্যাটাগরি: <b>${db.categories.length}</b> টি<br>ডাটা এই ব্রাউজারের localStorage-এ সংরক্ষিত।`;
 }
 
 /* ---------------------------- Document Ready ---------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
-  loadDB(); // লোকাল ডাটাবেজ লোড
+  loadDB();
   
-  // পিন ইনপুট ইভেন্ট লিসেনার
   const pinInput = document.getElementById("appPinInput");
   if (pinInput) {
     pinInput.addEventListener("keypress", e => { 
@@ -1005,17 +1002,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ফায়ারবেস থেকে ডাটা রিয়েলটাইমে সিঙ্ক করা (যদি ফায়ারবেস প্রস্তুত থাকে)
-  if (window.firebaseDB && window.firebaseOnValue && window.firebaseRef) {
-    const dataRef = window.firebaseRef(window.firebaseDB, 'myAppData/db');
-    window.firebaseOnValue(dataRef, (snapshot) => {
-      const fbData = snapshot.val();
-      if (fbData) {
-        db = fbData;
-        localStorage.setItem(DB_KEY, JSON.stringify(db));
-        reloadDropdowns();
-        triggerLiveUpdate();
-      }
-    });
-  }
+  // ফায়ারবেস থেকে রিয়েলটাইম সিঙ্ক
+  let isInitialLoad = true;
+  const checkFirebase = setInterval(() => {
+    if (window.firebaseDB && window.firebaseOnValue && window.firebaseRef) {
+      clearInterval(checkFirebase);
+      const dataRef = window.firebaseRef(window.firebaseDB, 'myAppData/db');
+      window.firebaseOnValue(dataRef, (snapshot) => {
+        const fbData = snapshot.val();
+        if (fbData && isInitialLoad) {
+          db = fbData;
+          localStorage.setItem(DB_KEY, JSON.stringify(db));
+          reloadDropdowns();
+          triggerLiveUpdate();
+          isInitialLoad = false;
+        }
+      });
+    }
+  }, 500);
 });
